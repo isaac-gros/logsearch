@@ -1,0 +1,37 @@
+services:
+
+  # Base de données OpenSearch
+  opensearch-node:
+    image: opensearchproject/opensearch:2.11.1
+    container_name: opensearch-node
+    environment:
+      - discovery.type=single-node
+      - "DISABLE_SECURITY_PLUGIN=true"
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+      - "9600:9600"
+    volumes:
+      - opensearch-data:/usr/share/opensearch/data
+
+  # Back-end FastAPI
+  fastapi-node:
+    build: ./back
+    container_name: fastapi-node
+    ports:
+      - "8000:8000"
+    depends_on:
+      - opensearch-node
+
+  # Front-end React
+  react-node:
+    build: ./front
+    container_name: react-node
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./front:/app
+      - /app/node_modules
+
+volumes:
+  opensearch-data:

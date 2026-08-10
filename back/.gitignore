@@ -1,0 +1,39 @@
+# ==========================================
+# Python Byte-Compiled Files
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ==========================================
+# Virtual Environments (Never commit these!)
+# ==========================================
+.venv/
+venv/
+ENV/
+env/
+
+# Secret/Sensitive environment variables 
+.env
+
+# ==========================================
+# Testing & Code Coverage
+# ==========================================
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# ==========================================
+# IDEs and Editors
+# ==========================================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ==========================================
+# OS Generated Files
+# ==========================================
+.DS_Store
+Thumbs.db
