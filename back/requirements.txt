@@ -1,1 +1,3 @@
 fastapi[standard]
+aiohttp
+opensearch-py
