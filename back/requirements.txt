@@ -1,3 +1,4 @@
 fastapi[standard]
 aiohttp
 opensearch-py
+pydantic

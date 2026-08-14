@@ -1,10 +1,12 @@
 from fastapi import FastAPI
-from src.settings import opensearch_client
+from src.database import opensearch_client
+from src.router import logs
 
 app = FastAPI()
+app.include_router(logs.router)
 
-@app.get("/")
-async def root():
+@app.get("/", tags=["Status"])
+async def status():
   try:
     database_running = await opensearch_client.ping()
     return {"status": "success", "message": "FastAPI is running", "database_connected": database_running}
