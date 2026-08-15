@@ -7,6 +7,7 @@ ENV PYTHONUNBUFFERED=1
 
 # Installation des dépendances
 COPY requirements.txt .
+COPY .env /.env
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copie du reste du code
