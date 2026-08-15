@@ -64,7 +64,7 @@ async def get_logs(
     # Prise en compte du level
     if level:
       must_match_queries.append({
-        "match": {
+        "term": {
           "level": level
         }
       })
@@ -72,7 +72,7 @@ async def get_logs(
     # Prise en compte du service
     if service:
       must_match_queries.append({
-        "match": {
+        "term": {
           "service": service
         }
       })
