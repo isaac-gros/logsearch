@@ -86,6 +86,37 @@ body {
 }
 
 .app-button {
-  @apply p-2 text-white bg-indigo-600 inline-block px-4;
+  @apply p-2 text-white bg-indigo-600 inline-block px-4 cursor-pointer;
   border-radius: 7px;
+}
+
+table {
+  border-radius: 10px;
+}
+
+th {
+  @apply font-bold;
+  box-shadow: 0 2px 2px 2px rgab(0, 0, 0, 0.7);
+}
+
+thead {
+  border-bottom: 2px solid rgba(0, 0, 0, 0.2);
+}
+
+th, td {
+  @apply p-2;
+}
+
+td.row-even {
+  @apply bg-gray-100;
+}
+
+.loading-data-text {
+  @apply p-3 my-1 bg-gray-300 block w-full;
+  border-radius: 5px;
+  animation: loading .8s infinite alternate-reverse;
+}
+@keyframes loading {
+  from { opacity: 1; }
+  to { opacity: .5; }
 }

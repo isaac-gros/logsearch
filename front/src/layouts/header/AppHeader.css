@@ -1,6 +1,7 @@
 header {
   position: fixed;
   inset: 0;
+  z-index: 900;
   bottom: auto;
   display: flex;
   flex-direction: row;

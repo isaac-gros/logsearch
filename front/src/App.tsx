@@ -1,4 +1,5 @@
 import AppHeader from "./layouts/header/AppHeader"
+import AppLogsList from "./components/logs-list/AppLogsList"
 import AppMainSearch from "./layouts/main-search/AppMainSearch"
 
 function App() {
@@ -7,6 +8,7 @@ function App() {
     <>
       <AppHeader></AppHeader>
       <AppMainSearch></AppMainSearch>
+      <AppLogsList></AppLogsList>
     </>
   )
 }

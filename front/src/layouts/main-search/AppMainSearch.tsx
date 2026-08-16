@@ -1,10 +1,8 @@
-import './AppMainSearch.css';
-
 function AppMainSearch() {
   const logsLevel = ['INFO', 'WARNING', 'ERROR', 'DEBUG'];
 
   return (
-    <main>
+    <main className="m-0 px-4 mt-12">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl my-6">Explorer les logs de vos services</h1>
         <div className="inline-flex">
