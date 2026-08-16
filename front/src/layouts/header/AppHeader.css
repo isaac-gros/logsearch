@@ -1,0 +1,21 @@
+header {
+  position: fixed;
+  inset: 0;
+  bottom: auto;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 1em;
+  background-color: var(--primary);
+
+  & > a {
+    display: block;
+    width: 100%;
+    margin: 0 auto;
+    max-width: 1400px;
+    font-family: var(--mono);
+    text-transform: uppercase;
+    color: var(--white);
+    font-size: 1.2em;
+  }
+}
