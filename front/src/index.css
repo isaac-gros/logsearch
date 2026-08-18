@@ -69,11 +69,10 @@ body {
 }
 
 .frame {
+  @apply flex items-baseline;
   border-radius: 10px;
   border: 1px solid inset var(--grey);
   box-shadow: 0 5px 10px 3px rgba(0, 0, 0, 0.2);
-  display: flex;
-  flex-direction: row;
 }
 
 .app-input {
@@ -88,6 +87,10 @@ body {
 .app-button {
   @apply p-2 text-white bg-indigo-600 inline-block px-4 cursor-pointer;
   border-radius: 7px;
+}
+
+#logs-list > .frame {
+  min-height: 100vh;
 }
 
 table {
@@ -105,6 +108,7 @@ thead {
 
 th, td {
   @apply p-2;
+  max-height: 50px;
 }
 
 td.row-even {

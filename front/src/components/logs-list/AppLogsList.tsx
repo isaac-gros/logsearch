@@ -1,13 +1,68 @@
-import { useState } from "react";
-import { type LogLevel } from "../../types";
+import { useEffect, useState } from "react";
+import { type ServerLogsPayload, type LogPayload } from "../../types";
 import { type Log } from "../../types";
+import { apiService } from "../../services/api_services";
+import AppLogsListRow from "./AppLogsListRow";
+import AppPendingLogsList from "./AppPendingLogsList";
 
+/**
+ * Tableau des logs
+ */
 function AppLogsList() {
-  const [isLoading, setLoading] = useState(true)
-  const loadingTableRows = generateLoadingTableRows()
-  const sampleDataRows = generateDataRows(generateSampleData())
+  const [logsData, setLogsData] = useState<Log[]>([]);
+  const [isLoading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  setTimeout(() => setLoading(false), 1500)
+  useEffect(() => {
+    if (logsData.length == 0 && isLoading) {
+      apiService
+        .getLogs({})
+        .then((res) => {
+          // En cas de succès, on met à jour le state des données (logsData)
+          if (res.status == 200) {
+            const payload = res.data;
+
+            // Si aucun log n'a été trouvé, on affiche un message
+            if (payload.data.length == 0) {
+              setErrorMessage("Aucune donnée à afficher");
+              return;
+            }
+
+            // Sinon, on traite chaque élément en tant que Log
+            const logs: Log[] = []
+            payload.data.forEach((item: LogPayload) => {
+              logs.push({
+                timestamp: new Date(item.timestamp),
+                level: item.level,
+                message: item.message,
+                service: item.service,
+              });
+            });
+            setLogsData(logs);
+          } else {
+            // Pour tout autre erreur, on affiche un message avec le statut HTTP
+            setErrorMessage(`Une erreur est survenue (Erreur ${res.status}).`);
+            console.error(res.data);
+          }
+        })
+        .catch((err) => {
+          // On affiche un message en cas d'erreur
+          setErrorMessage(
+            `Une erreur inattendue est survenue : ${err.toString()}`,
+          );
+        })
+        .finally(() => {
+          // On finit le chargement
+          setLoading(false);
+        });
+    }
+  }, [logsData, setLogsData, isLoading, setLoading]);
+
+  // Fonction permettant de relancer la recherche
+  const refreshLogsList = () => {
+    setLogsData([]);
+    setLoading(true);
+  };
 
   return (
     <section id="logs-list" className="m-0 px-4 my-6">
@@ -20,100 +75,53 @@ function AppLogsList() {
             <col span={1} width={"20%"}></col>
           </colgroup>
           <thead>
-            <th>Date</th>
-            <th>Niveau</th>
-            <th>Message</th>
-            <th>Service</th>
+            <tr>
+              <th>Date</th>
+              <th>Niveau</th>
+              <th>Message</th>
+              <th>Service</th>
+            </tr>
           </thead>
           <tbody>
-            {isLoading 
-              ? loadingTableRows.map(item => item)
-              : sampleDataRows.map(item => item)
-            }
+            {/* Squelette de visualiser */}
+            <AppPendingLogsList isHidden={!isLoading}></AppPendingLogsList>
+
+            {/* Affichage des logs */}
+            {logsData.length > 0 ? (
+              logsData.map((logItem, logKey) => (
+                <AppLogsListRow
+                  logItem={logItem}
+                  entryKey={logKey}
+                ></AppLogsListRow>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={4} className="text-center">
+                  <p className="py-2">{!isLoading ? errorMessage : ""}</p>
+                </td>
+              </tr>
+            )}
+
+            {/* Affichage d'un bouton pour rafraîchir la liste */}
+            {!isLoading ? (
+              <tr>
+                <td colSpan={4} className="text-center">
+                  <a
+                    className="text-blue-600 underline cursor-pointer"
+                    onClick={() => refreshLogsList()}
+                  >
+                    Actualiser
+                  </a>
+                </td>
+              </tr>
+            ) : (
+              <></>
+            )}
           </tbody>
         </table>
       </div>
     </section>
-  )
-}
-
-/**
- * Génère une vue "placeholder" 
- * pendant le chargement des données
- * @returns {React.JSX.Element[]} Une arborescence HTML 
- */
-function generateLoadingTableRows() {
-  const loadingTableRows = []
-  while (loadingTableRows.length < 20) {
-    const columns = [0,1,2,3];
-    const rowId = loadingTableRows.length.toString()
-    loadingTableRows.push(
-      <tr key={loadingTableRows.length.toString()}>
-        {columns.map((_, key) => (
-          <td key={rowId + key}>
-            <span className="loading-data-text"></span>
-          </td>
-        ))}
-      </tr>
-    )
-  }
-  return loadingTableRows
-}
-
-/**
- * Foncion permettant de générer de faux logs
- * @param {Log[]} data : Logs à implémenter 
- * @returns {React.JSX.Element[]} Une arborescence HTML 
- */
-function generateDataRows(data: Log[]) {
-  const tableRows = []
-  for (let i = 0; i < data.length; i++) {
-    const logItem = data[i]
-    const logData = [
-      logItem.timestamp.toISOString(), 
-      logItem.level, 
-      logItem.message, 
-      logItem.service
-    ]
-    tableRows.push(
-      <tr key={i}>
-        {logData.map((value, key) => (
-          <td key={i + key} className={i % 2 == 0 ? 'row-even' : ''}>{value}</td>
-        ))}
-      </tr>
-    )
-  }
-  return tableRows;
-}
-
-/**
- * Génère de fausse données de logs
- * @returns {Log[]} - Des logs factices
- */
-function generateSampleData() {
-  const ids = ["a1e2f3", "b4c5d6", "e1d2b3", "f4a5c6"];
-  const logsLevel: LogLevel[] = ["INFO", "WARNING", "ERROR", "DEBUG"];
-  const services = ["api-gateway","frontend-portal","payment-service","debugger"];
-  const messages = [
-    "Service _ successfully processed",
-    "Request _ timed out",
-    "Invalid credentials for user _",
-    "Debugging value : _",
-  ];
-
-  const sampleData = [];
-  for (let i = 0; i < 20; i++) {
-    const randDate = Math.floor(Math.random() * 7) * (24 * 60)
-    const randomId = ids[i % 4];
-    const randomDateCalculated = new Date().getTime() - randDate;
-    sampleData.push({
-      timestamp: new Date(randomDateCalculated),
-      level: logsLevel[i % 4],
-      message: messages[i % 4].replace('_', randomId),
-      service: services[i % 4],
-    })
-  }
-  return sampleData;
+  );
 }
 
 export default AppLogsList;
