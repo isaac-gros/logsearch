@@ -1,11 +1,5 @@
-import axios from 'axios';
-import type { ServerLogsPayload } from '../types';
-
-type GET_LogSearchParams = {
-  query?: string,
-  level?: string,
-  service?: string
-}
+import axios, { type AxiosResponse } from 'axios';
+import type { LogsSearchParams, ServerLogsPayload } from '../types';
 
 const apiBaseUrl = import.meta.env.VITE_BACKEND_URL
 
@@ -13,8 +7,16 @@ export const apiService = {
 
   /**
    * GET /logs/search - Récupération des logs serveurs 
+   * @param {LogsSearchParams} : Un objet contenant les query params de l'utilisateur
+   * @returns {Promise<AxiosResponse>} : Une promise (réponse) de la requête Axios
    */
-  getLogs: ({query, level, service }: GET_LogSearchParams) => {
-    return axios.get<ServerLogsPayload>(`${apiBaseUrl}/logs/search`)
+  getLogs: ({query, level, service }: LogsSearchParams): Promise<AxiosResponse> => {
+    return axios.get<ServerLogsPayload>(`${apiBaseUrl}/logs/search`, {
+      params: {
+        q: query,
+        level: level,
+        service: service
+      }
+    })
   }
 }

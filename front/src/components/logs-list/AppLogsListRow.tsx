@@ -19,9 +19,9 @@ function AppLogsListRow({entryKey, logItem}: AppLogsListRowProps) {
   )
 
   return (
-    <tr key={entryKey}>
-      {logValues.map(logValue => (
-        <td className={rowClassName}>{logValue}</td>
+    <tr>
+      {logValues.map((logValue, dataKey) => (
+        <td key={`${entryKey}${dataKey}`} className={rowClassName}>{logValue}</td>
       ))}
     </tr>
   )

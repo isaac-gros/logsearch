@@ -1,67 +1,83 @@
 import { useEffect, useState } from "react";
-import { type ServerLogsPayload, type LogPayload } from "../../types";
+import { type LogPayload, type LogsSearchParams } from "../../types";
 import { type Log } from "../../types";
 import { apiService } from "../../services/api_services";
 import AppLogsListRow from "./AppLogsListRow";
 import AppPendingLogsList from "./AppPendingLogsList";
 
+interface AppLogsListProps {
+  userQueryState: LogsSearchParams;
+}
+
 /**
  * Tableau des logs
  */
-function AppLogsList() {
-  const [logsData, setLogsData] = useState<Log[]>([]);
-  const [isLoading, setLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("");
+function AppLogsList({
+  userQueryState,
+}: AppLogsListProps) {
+  const [logsData, setLogsData] = useState<Log[]>([])
+  const [isLoading, setLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState("")
+  const [refetchTrigger, setRefetchTrigger] = useState(0)
 
+  // Sérialisation pour garantir une comparaison par valeur et non par référence
+  const queryParamsKey = JSON.stringify(userQueryState)
+
+  // On requête les logs au chargement et à chaque mise à jour du refetchTrigger
   useEffect(() => {
-    if (logsData.length == 0 && isLoading) {
-      apiService
-        .getLogs({})
-        .then((res) => {
-          // En cas de succès, on met à jour le state des données (logsData)
-          if (res.status == 200) {
-            const payload = res.data;
+    let isCancelled = false;
 
-            // Si aucun log n'a été trouvé, on affiche un message
-            if (payload.data.length == 0) {
-              setErrorMessage("Aucune donnée à afficher");
-              return;
-            }
+    // Requête vers l'API encapsulée avec async
+    const fetchLogs = async () => {
+      setLoading(true)
+      setErrorMessage("")
 
-            // Sinon, on traite chaque élément en tant que Log
-            const logs: Log[] = []
-            payload.data.forEach((item: LogPayload) => {
-              logs.push({
-                timestamp: new Date(item.timestamp),
-                level: item.level,
-                message: item.message,
-                service: item.service,
-              });
-            });
-            setLogsData(logs);
-          } else {
-            // Pour tout autre erreur, on affiche un message avec le statut HTTP
-            setErrorMessage(`Une erreur est survenue (Erreur ${res.status}).`);
-            console.error(res.data);
+      try {
+        const res = await apiService.getLogs(userQueryState)
+        if (isCancelled) return;
+
+        // Si la réponse est OK, on met à jour l'état
+        if (res.status === 200) {
+          const payload = res.data;
+
+          // S'il n'y a aucune donnée, on affiche un message
+          if (payload.data.length === 0) {
+            setErrorMessage("Aucune donnée à afficher")
+            setLogsData([])
+            return;
           }
-        })
-        .catch((err) => {
-          // On affiche un message en cas d'erreur
-          setErrorMessage(
-            `Une erreur inattendue est survenue : ${err.toString()}`,
-          );
-        })
-        .finally(() => {
-          // On finit le chargement
-          setLoading(false);
-        });
-    }
-  }, [logsData, setLogsData, isLoading, setLoading]);
 
-  // Fonction permettant de relancer la recherche
-  const refreshLogsList = () => {
-    setLogsData([]);
-    setLoading(true);
+          // On ajoute les logs dans le state
+          const logs: Log[] = payload.data.map((item: LogPayload) => ({
+            timestamp: new Date(item.timestamp),
+            level: item.level,
+            message: item.message,
+            service: item.service,
+          }))
+
+          setLogsData(logs)
+        } else {
+          setErrorMessage(`Une erreur est survenue (Erreur ${res.status}).`)
+        }
+      } catch (err) {
+        if (!isCancelled) {
+          setErrorMessage(`Une erreur inattendue est survenue : ${String(err)}`)
+        }
+      } finally {
+        if (!isCancelled) setLoading(false)
+      }
+    };
+    fetchLogs()
+
+    // Fonction de cleanup (évite de déclencher le useEffect de façon indésirable)
+    return () => {
+      isCancelled = true;
+    };
+  }, [userQueryState, queryParamsKey, refetchTrigger])
+
+  // Permet de relancer la requête API
+  const refreshLogs = () => {
+    setRefetchTrigger((prev) => prev + 1)
   };
 
   return (
@@ -91,6 +107,7 @@ function AppLogsList() {
               logsData.map((logItem, logKey) => (
                 <AppLogsListRow
                   logItem={logItem}
+                  key={logKey}
                   entryKey={logKey}
                 ></AppLogsListRow>
               ))
@@ -108,7 +125,7 @@ function AppLogsList() {
                 <td colSpan={4} className="text-center">
                   <a
                     className="text-blue-600 underline cursor-pointer"
-                    onClick={() => refreshLogsList()}
+                    onClick={() => refreshLogs()}
                   >
                     Actualiser
                   </a>
@@ -121,7 +138,7 @@ function AppLogsList() {
         </table>
       </div>
     </section>
-  );
+  )
 }
 
 export default AppLogsList;
