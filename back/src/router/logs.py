@@ -14,8 +14,8 @@ log: LogModel -- Un Log au format valide
 @router.post("/", status_code=201)
 async def create_log(log: LogModel):
   try:
-    index_name = await create_index_for_date()
     document = log.model_dump()
+    index_name = await create_index_for_date(document['timestamp'])
     response = await opensearch_client.index(
         index=index_name,
         body=document,
@@ -37,15 +37,19 @@ service: str | None -- Le service dont le log est issu
 async def get_logs(
   q: str | None = None,
   level: LogLevel | None = None,
-  service: str | None = None
+  service: str | None = None,
+  page: int | None = 1
 ):
   try:
-    # Récupération de l'index
-    index_name = await create_index_for_date()
+
+    # Permet de faire la pagination
+    result_size = 20
+    from_value = result_size * (page - 1)
 
     # Préparation de la requête OpenSearch
     query = {
-      "size": 20,
+      "from": from_value,
+      "size": result_size,
       "sort": [{"timestamp": {"order": "desc"}}],
       "query": {}
     }
@@ -87,10 +91,7 @@ async def get_logs(
       query["query"] = {"match_all": {}}
 
     # On envoie la requête
-    response = await opensearch_client.search(
-      index=index_name,
-      body=query
-    )
+    response = await opensearch_client.search(body=query)
 
     # Extraction des résultats
     hits = response["hits"]["hits"]
