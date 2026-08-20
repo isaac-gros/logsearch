@@ -1,5 +1,5 @@
 import axios, { type AxiosResponse } from 'axios';
-import type { LogsSearchParams, ServerLogsPayload } from '../types';
+import type { Log, LogsSearchParams, ServerLogsPayload } from '../types';
 
 const apiBaseUrl = import.meta.env.VITE_BACKEND_URL
 
@@ -18,5 +18,14 @@ export const apiService = {
         service: service
       }
     })
+  },
+
+  /**
+   * POST /logs
+   * @param {Log} payload : Corps de la requête, doit être un log valide
+   * @returns {Promise<AxiosResponse>} : Une promise (réponse) de la requête Axios
+   */
+  createLog: (payload: Log): Promise<AxiosResponse> => {
+    return axios.post(`${apiBaseUrl}/logs`, payload)
   }
 }

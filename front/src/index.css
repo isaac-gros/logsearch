@@ -78,15 +78,36 @@ body {
 .app-input {
   @apply bg-gray-200 text-gray-900 p-2;
   border-radius: 7px;
+
+  &[disabled] {
+    @apply opacity-50 cursor-not-allowed;
+  }
+}
+
+label.mandatory::after {
+  @apply text-indigo-500 font-bold;
+  content: ' *';
 }
 
 .app-form-field {
-  @apply flex flex-col gap-1 justify-between;
+  @apply flex flex-col gap-1;
 }
 
 .app-button {
   @apply p-2 text-white bg-indigo-600 inline-block px-4 cursor-pointer;
   border-radius: 7px;
+
+  &.error {
+    @apply bg-red-700;
+  }
+
+  &.success {
+    @apply bg-green-700;
+  }
+  
+  &[disabled] {
+    @apply opacity-50 cursor-not-allowed;
+  }
 }
 
 #logs-list > .frame {
