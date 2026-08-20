@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { type LogPayload, type LogsSearchParams } from "../../types";
+import { act, useEffect, useState, type BaseSyntheticEvent, type Dispatch, type SetStateAction } from "react";
+import { type LogPayload, type LogsSearchParams, type ServerLogsPayload } from "../../types";
 import { type Log } from "../../types";
 import { apiService } from "../../services/api_services";
 import AppLogsListRow from "./AppLogsListRow";
@@ -7,6 +7,7 @@ import AppPendingLogsList from "./AppPendingLogsList";
 
 interface AppLogsListProps {
   userQueryState: LogsSearchParams;
+  setUserQueryState: Dispatch<SetStateAction<LogsSearchParams>>
 }
 
 /**
@@ -14,8 +15,11 @@ interface AppLogsListProps {
  */
 function AppLogsList({
   userQueryState,
+  setUserQueryState
 }: AppLogsListProps) {
   const [logsData, setLogsData] = useState<Log[]>([])
+  const [totalItems, setTotalItems] = useState(0)
+  const [activePage, setActivePage] = useState(1)
   const [isLoading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState("")
   const [refetchTrigger, setRefetchTrigger] = useState(0)
@@ -38,12 +42,13 @@ function AppLogsList({
 
         // Si la réponse est OK, on met à jour l'état
         if (res.status === 200) {
-          const payload = res.data;
+          const payload: ServerLogsPayload = res.data;
 
           // S'il n'y a aucune donnée, on affiche un message
           if (payload.data.length === 0) {
             setErrorMessage("Aucune donnée à afficher")
             setLogsData([])
+            setTotalItems(0)
             return;
           }
 
@@ -54,7 +59,8 @@ function AppLogsList({
             message: item.message,
             service: item.service,
           }))
-
+          
+          setTotalItems(payload.total)
           setLogsData(logs)
         } else {
           setErrorMessage(`Une erreur est survenue (Erreur ${res.status}).`)
@@ -65,6 +71,7 @@ function AppLogsList({
         }
       } finally {
         if (!isCancelled) setLoading(false)
+        setActivePage(1)
       }
     };
     fetchLogs()
@@ -80,9 +87,25 @@ function AppLogsList({
     setRefetchTrigger((prev) => prev + 1)
   };
 
+  // Fonctions de paginations
+  const getMaxPageNumber = () => {
+    return Math.ceil(totalItems / 20)
+  }
+
+  // Changement du numéro de page
+  const handleNavButton = (dir: "prev" | "next") => {
+    const nextValue = (dir == "next") ? 1 : -1
+    setActivePage(activePage + nextValue)
+    setUserQueryState({
+      ...userQueryState,
+      page: activePage
+    })
+    refreshLogs()
+  }
+
   return (
     <section id="logs-list" className="m-0 px-4 my-6">
-      <div className="frame">
+      <div className="frame flex-col relative">
         <table className="w-full text-left p-2 mb-5">
           <colgroup>
             <col span={1} width={"20%"}></col>
@@ -99,7 +122,7 @@ function AppLogsList({
             </tr>
           </thead>
           <tbody>
-            {/* Squelette de visualiser */}
+            {/* "Squelette" de visualisation des logs */}
             <AppPendingLogsList isHidden={!isLoading}></AppPendingLogsList>
 
             {/* Affichage des logs */}
@@ -120,7 +143,7 @@ function AppLogsList({
             )}
 
             {/* Affichage d'un bouton pour rafraîchir la liste */}
-            {!isLoading ? (
+            {!isLoading && errorMessage !== '' ? (
               <tr>
                 <td colSpan={4} className="text-center">
                   <a
@@ -136,6 +159,37 @@ function AppLogsList({
             )}
           </tbody>
         </table>
+
+        {/* Navigation et nombre total d'éléments */}
+        {totalItems > 0 ? 
+        <div className="flex justify-center w-full pb-2 pt-1 mb-2 sticky bottom-0" id="logs-list-pagination">
+          <div className="flex flex-col justify-center items-center gap-3">
+            <p>{totalItems} éléments</p>
+            <div className="flex items-center gap-6">
+              <button 
+                type="button" 
+                className="app-button" 
+                disabled={activePage == 1}
+                onClick={() => handleNavButton("prev")}>‹</button>
+              <div className="flex items-center">
+                <input 
+                  readOnly={true}
+                  value={activePage}
+                  type="text" 
+                  className="app-input inline-flex w-10"
+                />
+                <p>/{getMaxPageNumber()}</p>
+              </div>
+              <button 
+                type="button" 
+                className="app-button" 
+                disabled={getMaxPageNumber() == activePage}
+                onClick={() => handleNavButton("next")}
+              >›</button>
+            </div>
+          </div>
+        </div>
+        : <></>}
       </div>
     </section>
   )

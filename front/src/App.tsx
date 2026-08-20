@@ -7,7 +7,7 @@ import type { LogsSearchParams } from "./types"
 function App() {
 
   // Stockage des query params de recherche de l'utilisateur
-  const [userQuery, setUserQuery] = useState<LogsSearchParams>({})
+  const [userQuery, setUserQuery] = useState<LogsSearchParams>({ page: 1 })
 
   return (
     <>
@@ -17,7 +17,7 @@ function App() {
       <AppMainSearch setUserQueryState={setUserQuery}></AppMainSearch>
 
       {/* Liste des logs */}
-      <AppLogsList userQueryState={userQuery}></AppLogsList>
+      <AppLogsList setUserQueryState={setUserQuery} userQueryState={userQuery}></AppLogsList>
     </>
   )
 }

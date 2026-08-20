@@ -89,7 +89,7 @@ function AppCreateLogForm({
       const res = await apiService.createLog(logData);
       if (res.status === 201) {
         setInfoMessage("Log ajouté avec succès.");
-        setNewQueryState({});
+        setNewQueryState({ page: 1 });
       } else {
         setInfoMessage(
           `Une erreur est survenue lors de l'envoi du log (erreur ${res.status})`,
