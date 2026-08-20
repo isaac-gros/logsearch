@@ -37,7 +37,7 @@ indexes = []
 def generate_sample_data(count=200):
 
   SERVICES = ["auth-api", "payment-service", "user-management", "frontend-gateway"]
-  LEVELS = ["INFO", "INFO", "INFO", "WARN", "ERROR", "DEBUG"]  # Biais vers INFO
+  LEVELS = ["INFO", "INFO", "INFO", "WARNING", "ERROR", "DEBUG"]  # Biais vers INFO
   MESSAGES = {
       "INFO": ["User logged in successfully", "GET /api/v1/items", "Order processed"],
       "WARN": ["Invalid API token provided", "Resource not found", "Rate limit reached"],
