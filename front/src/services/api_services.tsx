@@ -10,12 +10,13 @@ export const apiService = {
    * @param {LogsSearchParams} : Un objet contenant les query params de l'utilisateur
    * @returns {Promise<AxiosResponse>} : Une promise (réponse) de la requête Axios
    */
-  getLogs: ({query, level, service }: LogsSearchParams): Promise<AxiosResponse> => {
+  getLogs: ({query, level, service, page }: LogsSearchParams): Promise<AxiosResponse> => {
     return axios.get<ServerLogsPayload>(`${apiBaseUrl}/logs/search`, {
       params: {
         q: query,
         level: level,
-        service: service
+        service: service,
+        page: page
       }
     })
   },

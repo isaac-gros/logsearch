@@ -3,8 +3,9 @@
 
 :root {
   --text: #6b6375;
-  --text-logo: #f3f4f6;;
+  --text-logo: #f3f4f6;
   --bg: #fff;
+  --bg-opaque: rgba(255, 255, 255, .5);
   --input-bg: #e5e7eb;
   --frame-bg: #fff;
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
@@ -93,6 +94,11 @@ label.mandatory::after {
   font-family: var(--mono);
 }
 
+#logs-list-pagination {
+  background-color: var(--bg-opaque);
+  backdrop-filter: blur(5px);
+}
+
 table {
   border-radius: 10px;
 }
@@ -130,6 +136,7 @@ td.row-even {
   :root {
     --text: hsl(0, 0%, 80%);
     --bg: hsl(245, 45%, 15%);
+    --bg-opaque: rgb(24, 21, 55, .6);
     --input-bg: hsl(245, 45%, 20%);
     --frame-bg: hsl(245, 45%, 25%);
   }

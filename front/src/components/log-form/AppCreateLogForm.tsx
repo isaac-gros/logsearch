@@ -16,23 +16,27 @@ function AppCreateLogForm({
   setNewQueryState,
   logLevels,
 }: AppCreateLogFormProps) {
+  
+  // Définition de la date par défaut du log
+  const now = new Date()
+  const timezoneOffset = now.getTimezoneOffset()
+  const defaultDateMinutes = now.getMinutes()
+
+  // On soustrait le déclage horaire avec UTC+00 pour
+  // avoir une valeur ayant le fuseau horaire local
+  now.setMinutes(defaultDateMinutes - timezoneOffset)
+  const defaultFormDate = now.toISOString()
+  const defaultFormDateValue = defaultFormDate.slice(0, 19)
+  
   // Création d'un Log par défaut au chargement
-  const defaultLogObject = {
-    timestamp: new Date(),
+  const defaultLogObject: LogPayload = {
+    timestamp: defaultFormDateValue, // Retire la timezone
     message: "",
     level: logLevels[0],
     service: "",
   };
 
-  // Modification du log par défaut
-  // afin d'afficher une date lisible dans le formulaire
-  const defaultLogPayload = Object.assign({
-    ...defaultLogObject,
-    ["timestamp"]: new Date().toISOString().slice(0, 19),
-  });
-
-  const [newLogFormData, setNewLogFormData] =
-    useState<LogPayload>(defaultLogPayload);
+  const [newLogFormData, setNewLogFormData] = useState<LogPayload>(defaultLogObject);
   const [formDisabled, setFormDisabled] = useState(false);
   const [infoMessage, setInfoMessage] = useState("");
 
@@ -41,15 +45,24 @@ function AppCreateLogForm({
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >,
   ) => {
+    // On réinitialise le messages d'info
+    setInfoMessage("");
+    
     // Récupération des noms des champs et de leurs valeurs
     const { name, value } = event.target;
+    
+    // Contrôle de la date (vérifie que la date n'est pas dans le futur)
+    if (name == 'timestamp') {
+      if (value > defaultFormDateValue) {
+        setInfoMessage("La date ne peut être supérieure à l'heure actuelle")
+        return
+      }
+    }
+
     setNewLogFormData({
       ...newLogFormData,
       [name]: value,
     });
-
-    // On réinitialise le messages d'info
-    setInfoMessage("");
   };
 
   // Permet de soumettre le forumaire lorsque la touche
@@ -76,7 +89,7 @@ function AppCreateLogForm({
       const res = await apiService.createLog(logData);
       if (res.status === 201) {
         setInfoMessage("Log ajouté avec succès.");
-        setNewQueryState({});
+        setNewQueryState({ page: 1 });
       } else {
         setInfoMessage(
           `Une erreur est survenue lors de l'envoi du log (erreur ${res.status})`,
@@ -154,6 +167,7 @@ function AppCreateLogForm({
             required={true}
             step={1}
             value={newLogFormData.timestamp}
+            max={defaultFormDateValue}
             onChange={(e) => handleFieldChange(e)}
           />
         </div>

@@ -10,7 +10,8 @@ type Log = {
 type LogsSearchParams = {
   query?: string,
   level?: string,
-  service?: string
+  service?: string,
+  page?: number,
 }
 
 // Réponse du serveur dans le cas d'un renvoi de logs OK
