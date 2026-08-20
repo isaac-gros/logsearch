@@ -1,61 +1,29 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
+
 :root {
   --text: #6b6375;
-  --text-h: #08060d;
+  --text-logo: #f3f4f6;;
   --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
-
+  --input-bg: #e5e7eb;
+  --frame-bg: #fff;
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
   --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
-
+  --mono: "Roboto Mono", ui-monospace, Consolas, monospace;
   font: 18px/145% var(--sans);
   letter-spacing: 0.18px;
   color-scheme: light dark;
   color: var(--text);
   background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 
   @media (max-width: 1024px) {
     font-size: 16px;
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
-
 #root {
-  width: 1126px;
-  max-width: 100%;
+  width: 100%;
   margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
   min-height: 100svh;
   display: flex;
   flex-direction: column;
@@ -64,48 +32,109 @@
 
 body {
   margin: 0;
+  font-family: var(--sans);
 }
 
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
-}
+header {
+  @apply fixed inset-0 z-50 bottom-auto flex items-center justify-between p-4 bg-indigo-600;
 
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
+  & > a {
+    font-family: var(--mono);
+    text-transform: uppercase;
+    color: var(--text-logo);
+    font-size: 1.2em;
   }
 }
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
-  margin: 0;
+
+.frame {
+  @apply flex items-baseline;
+  border-radius: 10px;
+  border: 1px solid inset var(--grey);
+  box-shadow: 0 5px 10px 3px rgba(0, 0, 0, 0.2);
+  background-color: var(--frame-bg);
 }
 
-code,
-.counter {
+.app-input {
+  @apply p-2;
+  border-radius: 7px;
+  background: var(--input-bg);
+  color: var(--text);
+
+  &[disabled] {
+    @apply opacity-50 cursor-not-allowed;
+  }
+}
+
+label.mandatory::after {
+  @apply text-indigo-500 font-bold;
+  content: ' *';
+}
+
+.app-form-field {
+  @apply flex flex-col gap-1;
+}
+
+.app-button {
+  @apply p-2 text-white bg-indigo-600 inline-block px-4 cursor-pointer;
+  border-radius: 7px;
+
+  &.error {
+    @apply bg-red-700;
+  }
+
+  
+  &[disabled] {
+    @apply opacity-50 cursor-not-allowed;
+  }
+}
+
+#logs-list > .frame {
+  min-height: 100vh;
   font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
 }
 
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+table {
+  border-radius: 10px;
+}
+
+th {
+  @apply font-bold;
+  box-shadow: 0 2px 2px 2px rgab(0, 0, 0, 0.7);
+}
+
+thead {
+  border-bottom: 2px solid rgba(0, 0, 0, 0.2);
+}
+
+th, td {
+  @apply p-2;
+  max-height: 50px;
+}
+
+td.row-even {
+  @apply bg-gray-100;
+}
+
+.loading-data-text {
+  @apply p-3 my-1 bg-gray-300 block w-full;
+  border-radius: 5px;
+  animation: loading .8s infinite alternate-reverse;
+}
+@keyframes loading {
+  from { opacity: 1; }
+  to { opacity: .5; }
+}
+
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text: hsl(0, 0%, 80%);
+    --bg: hsl(245, 45%, 15%);
+    --input-bg: hsl(245, 45%, 20%);
+    --frame-bg: hsl(245, 45%, 25%);
+  }
+
+  td.row-even {
+    background-color: hsl(245, 45%, 20%);
+  }
 }
