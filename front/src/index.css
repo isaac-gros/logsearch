@@ -1,61 +1,27 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
 
 :root {
   --text: #6b6375;
-  --text-h: #08060d;
-  --white: #fff;
-  --grey: #a1a1a1;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --primary: #2a2c6c;
-  --accent: #623bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
-
+  --text-logo: #f3f4f6;;
+  --bg: #fff;
+  --input-bg: #e5e7eb;
+  --frame-bg: #fff;
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
   --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
-
+  --mono: "Roboto Mono", ui-monospace, Consolas, monospace;
   font: 18px/145% var(--sans);
   letter-spacing: 0.18px;
   color-scheme: light dark;
   color: var(--text);
   background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 
   @media (max-width: 1024px) {
     font-size: 16px;
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
-
 #root {
-  max-width: 1400px;
   width: 100%;
   margin: 0 auto;
   min-height: 100svh;
@@ -66,6 +32,18 @@
 
 body {
   margin: 0;
+  font-family: var(--sans);
+}
+
+header {
+  @apply fixed inset-0 z-50 bottom-auto flex items-center justify-between p-4 bg-indigo-600;
+
+  & > a {
+    font-family: var(--mono);
+    text-transform: uppercase;
+    color: var(--text-logo);
+    font-size: 1.2em;
+  }
 }
 
 .frame {
@@ -73,11 +51,14 @@ body {
   border-radius: 10px;
   border: 1px solid inset var(--grey);
   box-shadow: 0 5px 10px 3px rgba(0, 0, 0, 0.2);
+  background-color: var(--frame-bg);
 }
 
 .app-input {
-  @apply bg-gray-200 text-gray-900 p-2;
+  @apply p-2;
   border-radius: 7px;
+  background: var(--input-bg);
+  color: var(--text);
 
   &[disabled] {
     @apply opacity-50 cursor-not-allowed;
@@ -101,9 +82,6 @@ label.mandatory::after {
     @apply bg-red-700;
   }
 
-  &.success {
-    @apply bg-green-700;
-  }
   
   &[disabled] {
     @apply opacity-50 cursor-not-allowed;
@@ -112,6 +90,7 @@ label.mandatory::after {
 
 #logs-list > .frame {
   min-height: 100vh;
+  font-family: var(--mono);
 }
 
 table {
@@ -144,4 +123,18 @@ td.row-even {
 @keyframes loading {
   from { opacity: 1; }
   to { opacity: .5; }
+}
+
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text: hsl(0, 0%, 80%);
+    --bg: hsl(245, 45%, 15%);
+    --input-bg: hsl(245, 45%, 20%);
+    --frame-bg: hsl(245, 45%, 25%);
+  }
+
+  td.row-even {
+    background-color: hsl(245, 45%, 20%);
+  }
 }

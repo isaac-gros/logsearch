@@ -1,5 +1,5 @@
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
-import type { Log, LogLevel, LogPayload, LogsSearchParams } from "../../types";
+import type { LogLevel, LogsSearchParams } from "../../types";
 import AppSearchLogsForm from "../../components/log-form/AppSearchLogsForm";
 import AppCreateLogForm from "../../components/log-form/AppCreateLogForm";
 
@@ -8,20 +8,16 @@ interface AppMainSearchProps {
   setUserQueryState: Dispatch<SetStateAction<LogsSearchParams>>;
 }
 
+/**
+ * Formulaire de recherche et de création de logs 
+ */
 function AppMainSearch({ setUserQueryState }: AppMainSearchProps) {
   const logsLevel: LogLevel[] = ["INFO", "WARNING", "ERROR", "DEBUG"];
-  const defaultNewLogPayload = {
-    timestamp: Date(),
-    message: "",
-    level: logsLevel[0],
-    service: "",
-  };
 
   // On conserve en état les paramètres de recherche tant que
   // l'utilisateur n'a pas cliqué sur le bouton "Search"
-  const [showNewLogForm, setShowNewLogForm] = useState(false);
-  const [newLogPayload, setNewLogPayload] = useState<LogPayload>(defaultNewLogPayload);
   const [queryPayload, setQueryPayload] = useState<LogsSearchParams>({});
+  const [showNewLogForm, setShowNewLogForm] = useState(false);
 
   const toggleLogForm = () => setShowNewLogForm(!showNewLogForm);
   const displayTitle = () => {
@@ -35,7 +31,7 @@ function AppMainSearch({ setUserQueryState }: AppMainSearchProps) {
   }, [setUserQueryState, queryPayload])
 
   return (
-    <main className="m-0 px-4 mt-12">
+    <main className="m-0 px-4 mt-14">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl my-6">{displayTitle()}</h1>
         <div className="inline-flex">

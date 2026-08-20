@@ -14,9 +14,16 @@ function AppLogsListRow({entryKey, logItem}: AppLogsListRowProps) {
   const rowClassName = entryKey % 2 == 0 ? 'row-even' : ''
 
   // Conversion en chaîne de chaque valeurs du log
-  const logValues = Object.values(logItem).map(item =>
-    (item instanceof Date) ? item.toISOString() : item.toString()
-  )
+  const logValues = Object.values(logItem).map(item => {
+    if (item instanceof Date) {
+      const itemDate = item.toISOString().split('T')[0]
+      const itemTime = item.toLocaleTimeString()
+      return [itemDate, itemTime].join(' ')
+    } else {
+      return String(item)
+    }
+
+  })
 
   return (
     <tr>

@@ -1,5 +1,3 @@
-import './AppHeader.css'
-
 function AppHeader() {
   return (
     <header>

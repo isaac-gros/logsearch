@@ -1,5 +1,4 @@
 import {
-  useEffect,
   useState,
   type ChangeEvent,
   type Dispatch,
@@ -136,7 +135,7 @@ function AppCreateLogForm({
       {infoMessage == "" ? (
         <></>
       ) : (
-        <div className="my-2 col-span-12">{infoMessage}</div>
+        <div className="my-2 col-span-12 font-bold">{infoMessage}</div>
       )}
 
       {/* 1ere colonne: Date et message du log */}
@@ -226,7 +225,7 @@ function AppCreateLogForm({
         <button
           disabled={formDisabled}
           type="button"
-          className="app-button success mt-8.5"
+          className="app-button mt-8.5"
           onClick={() => handleFormSubmit()}
         >
           Enregistrer
