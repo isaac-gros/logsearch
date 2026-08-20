@@ -6,12 +6,6 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 app.include_router(logs.router)
 
-# Définir les origines autorisées
-origins = [
-  "http://localhost",
-  "http://127.0.0.1",
-]
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
