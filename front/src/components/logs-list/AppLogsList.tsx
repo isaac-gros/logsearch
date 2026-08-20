@@ -62,6 +62,7 @@ function AppLogsList({
           
           setTotalItems(payload.total)
           setLogsData(logs)
+          setActivePage(userQueryState.page ?? 1)
         } else {
           setErrorMessage(`Une erreur est survenue (Erreur ${res.status}).`)
         }
@@ -71,7 +72,6 @@ function AppLogsList({
         }
       } finally {
         if (!isCancelled) setLoading(false)
-        setActivePage(1)
       }
     };
     fetchLogs()
@@ -94,11 +94,11 @@ function AppLogsList({
 
   // Changement du numéro de page
   const handleNavButton = (dir: "prev" | "next") => {
-    const nextValue = (dir == "next") ? 1 : -1
-    setActivePage(activePage + nextValue)
+    const nextValue = activePage + (dir == "next" ? 1 : -1)
+    setActivePage(nextValue)
     setUserQueryState({
       ...userQueryState,
-      page: activePage
+      page: nextValue
     })
     refreshLogs()
   }

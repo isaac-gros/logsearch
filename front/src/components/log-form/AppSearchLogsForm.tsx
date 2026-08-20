@@ -47,7 +47,10 @@ function AppSearchLogsForm({
 
   // Mise à jour du state parent userQuery
   const handleFormSubmit = () => {
-    setQueryPayloadState(logQueryFormData);
+    setQueryPayloadState({
+      ...logQueryFormData,
+      page: 1
+    });
   };
 
   // Permet de soumettre le forumaire lorsque la touche
